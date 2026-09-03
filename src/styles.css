@@ -13,9 +13,50 @@ body { min-height: 100svh; overflow: hidden; }
 
 button, input { font: inherit; }
 
+audio { display: none; }
+
 button:focus-visible, input:focus-visible {
   outline: 1px solid #fff6e3;
   outline-offset: 5px;
+}
+
+.music-toggle {
+  position: fixed;
+  top: clamp(20px, 4vw, 42px);
+  right: clamp(20px, 4.5vw, 68px);
+  z-index: 30;
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  padding: 8px 0;
+  border: 0;
+  background: transparent;
+  color: rgba(255, 246, 227, .58);
+  font-family: "Avenir Next", "Helvetica Neue", sans-serif;
+  font-size: 9px;
+  font-weight: 600;
+  letter-spacing: .2em;
+  cursor: pointer;
+  transition: color .25s ease;
+}
+
+.music-toggle:hover,
+.music-toggle:focus-visible {
+  color: #fff6e3;
+  outline: none;
+}
+
+.music-toggle__note {
+  display: inline-block;
+  font-family: Georgia, serif;
+  font-size: 15px;
+  font-weight: 400;
+  line-height: 1;
+  transform-origin: center bottom;
+}
+
+.music-toggle.is-playing .music-toggle__note {
+  animation: music-note 1.4s ease-in-out infinite;
 }
 
 .private-entry {
@@ -508,6 +549,11 @@ button:focus-visible, input:focus-visible {
 
 @keyframes logo-reveal {
   from { opacity: 0; transform: translateY(20px) scale(.985); filter: blur(8px) brightness(0) invert(1); }
+}
+
+@keyframes music-note {
+  0%, 100% { transform: rotate(-5deg) translateY(0); }
+  50% { transform: rotate(5deg) translateY(-2px); }
 }
 
 @keyframes reveal {

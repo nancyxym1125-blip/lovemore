@@ -1,9 +1,10 @@
-import { useEffect, useState, type CSSProperties, type FormEvent, type KeyboardEvent } from 'react'
+import { useEffect, useRef, useState, type CSSProperties, type FormEvent, type KeyboardEvent } from 'react'
 import { isRelationshipMilestone, relationshipDay, toLocalDateString } from './data'
 import { ShaderBackground } from './ShaderBackground'
 
 const loveMoreLogo = new URL('../brand/vi-v2/assets/logos/love-more-horizontal-burgundy.png', import.meta.url).href
 const loveMoreStackedLogo = new URL('../brand/vi-v2/assets/logos/love-more-primary-stacked-white.png', import.meta.url).href
+const backgroundMusic = new URL('./assets/L-O-V-E.mp3', import.meta.url).href
 const PRIVATE_CODE = '19940312'
 const RELATIONSHIP_START = '2026-05-31'
 const LETTER_LINES = [
@@ -16,6 +17,7 @@ const LETTER_LINES = [
 ]
 
 const LETTER_EXIT_DURATION = 850
+const MUSIC_VOLUME = 0.32
 
 function getPreviewDay(search: string): number | null {
   const value = Number(new URLSearchParams(search).get('preview-day'))
@@ -68,6 +70,52 @@ function App() {
   const [letterLine, setLetterLine] = useState(-1)
   const [letterExiting, setLetterExiting] = useState(false)
   const [easterEggOpen, setEasterEggOpen] = useState(false)
+  const [musicPlaying, setMusicPlaying] = useState(false)
+  const audioRef = useRef<HTMLAudioElement>(null)
+  const musicFadeFrame = useRef<number | null>(null)
+
+  const fadeMusicTo = (targetVolume: number, duration: number, onComplete?: () => void) => {
+    const audio = audioRef.current
+    if (!audio) return
+    if (musicFadeFrame.current !== null) window.cancelAnimationFrame(musicFadeFrame.current)
+
+    const initialVolume = audio.volume
+    const startedAt = performance.now()
+    const animateVolume = (now: number) => {
+      const progress = Math.min(1, (now - startedAt) / duration)
+      const easedProgress = 1 - Math.pow(1 - progress, 3)
+      audio.volume = initialVolume + (targetVolume - initialVolume) * easedProgress
+      if (progress < 1) {
+        musicFadeFrame.current = window.requestAnimationFrame(animateVolume)
+      } else {
+        musicFadeFrame.current = null
+        onComplete?.()
+      }
+    }
+
+    musicFadeFrame.current = window.requestAnimationFrame(animateVolume)
+  }
+
+  const startMusic = (fadeDuration = 4000) => {
+    const audio = audioRef.current
+    if (!audio) return
+    if (audio.paused) audio.volume = 0
+    void audio.play().then(() => {
+      setMusicPlaying(true)
+      fadeMusicTo(MUSIC_VOLUME, fadeDuration)
+    }).catch(() => setMusicPlaying(false))
+  }
+
+  const stopMusic = (fadeDuration = 700) => {
+    const audio = audioRef.current
+    if (!audio) return
+    setMusicPlaying(false)
+    fadeMusicTo(0, fadeDuration, () => audio.pause())
+  }
+
+  useEffect(() => () => {
+    if (musicFadeFrame.current !== null) window.cancelAnimationFrame(musicFadeFrame.current)
+  }, [])
 
   useEffect(() => {
     if (!letterExiting) return
@@ -87,11 +135,13 @@ function App() {
       return
     }
     window.sessionStorage.setItem('love-more-unlocked', 'true')
+    startMusic()
     window.history.replaceState(null, '', `${window.location.pathname}${window.location.search}#yu-chen`)
     setUnlocked(true)
   }
 
   const returnToEntry = () => {
+    stopMusic()
     window.sessionStorage.removeItem('love-more-unlocked')
     window.history.replaceState(null, '', window.location.pathname)
     setCode('')
@@ -130,17 +180,37 @@ function App() {
     }
   }
 
+  const backgroundAudio = (
+    <audio ref={audioRef} src={backgroundMusic} loop preload="auto" />
+  )
+
+  const musicToggle = unlocked && (
+    <button
+      className={`music-toggle ${musicPlaying ? 'is-playing' : ''}`}
+      type="button"
+      aria-label={musicPlaying ? '关闭背景音乐' : '开启背景音乐'}
+      aria-pressed={musicPlaying}
+      onClick={() => musicPlaying ? stopMusic() : startMusic(1400)}
+    >
+      <span className="music-toggle__note" aria-hidden="true">♪</span>
+      <span>{musicPlaying ? 'MUSIC ON' : 'MUSIC OFF'}</span>
+    </button>
+  )
+
   if (unlocked && letterOpen) {
     return (
-      <main
-        className="letter-player"
-        role="button"
-        tabIndex={0}
-        autoFocus
-        aria-label="播放下一句话"
-        onClick={advanceLetter}
-        onKeyDown={handleLetterKey}
-      >
+      <>
+        {backgroundAudio}
+        {musicToggle}
+        <main
+          className="letter-player"
+          role="button"
+          tabIndex={0}
+          autoFocus
+          aria-label="播放下一句话"
+          onClick={advanceLetter}
+          onKeyDown={handleLetterKey}
+        >
         <ShaderBackground className="letter-page__shader" />
         <div className="letter-player__shade" aria-hidden="true" />
         {previewDay !== null && (
@@ -217,61 +287,69 @@ function App() {
             </button>
           </>
         )}
-      </main>
+        </main>
+      </>
     )
   }
 
   if (unlocked) {
     return (
-      <main className="welcome-screen" aria-labelledby="welcome-title">
-        <ShaderBackground className="welcome-screen__shader" />
-        <div className="welcome-screen__shade" aria-hidden="true" />
-        <p className="welcome-screen__brand">LOVE MORE</p>
-        <section className="welcome-screen__content">
-          <p className="welcome-screen__eyebrow">WELCOME</p>
-          <h1 id="welcome-title">YU CHEN</h1>
-          <p className="welcome-screen__letter-note">这里有一封写给你的信</p>
-          <button className="welcome-screen__letter-button" type="button" onClick={openLetter}>OPEN</button>
-        </section>
-        <button className="welcome-screen__return" type="button" onClick={returnToEntry}>← RETURN</button>
-      </main>
+      <>
+        {backgroundAudio}
+        {musicToggle}
+        <main className="welcome-screen" aria-labelledby="welcome-title">
+          <ShaderBackground className="welcome-screen__shader" />
+          <div className="welcome-screen__shade" aria-hidden="true" />
+          <p className="welcome-screen__brand">LOVE MORE</p>
+          <section className="welcome-screen__content">
+            <p className="welcome-screen__eyebrow">WELCOME</p>
+            <h1 id="welcome-title">YU CHEN</h1>
+            <p className="welcome-screen__letter-note">这里有一封写给你的信</p>
+            <button className="welcome-screen__letter-button" type="button" onClick={openLetter}>OPEN</button>
+          </section>
+          <button className="welcome-screen__return" type="button" onClick={returnToEntry}>← RETURN</button>
+        </main>
+      </>
     )
   }
 
   return (
-    <main className="private-entry" aria-labelledby="page-title">
-      <ShaderBackground className="private-entry__shader" />
-      <div className="private-entry__shade" aria-hidden="true" />
+    <>
+      {backgroundAudio}
+      <main className="private-entry" aria-labelledby="page-title">
+        <ShaderBackground className="private-entry__shader" />
+        <div className="private-entry__shade" aria-hidden="true" />
 
-      <p className="private-entry__owner">A PRIVATE PLACE FOR YU CHEN</p>
+        <p className="private-entry__owner">A PRIVATE PLACE FOR YU CHEN</p>
 
-      <section className="private-entry__content">
-        <h1 id="page-title" className="sr-only">Love More</h1>
-        <img className="private-entry__logo" src={loveMoreLogo} alt="LOVE MORE" />
+        <section className="private-entry__content">
+          <h1 id="page-title" className="sr-only">Love More</h1>
+          <img className="private-entry__logo" src={loveMoreLogo} alt="LOVE MORE" />
 
-        <form className={error ? 'code-entry has-error' : 'code-entry'} onSubmit={enterPrivatePage}>
-          <label htmlFor="private-code">输入暗号：</label>
-          <div className="code-entry__field">
-            <input
-              id="private-code"
-              name="code"
-              type="password"
-              inputMode="numeric"
-              autoComplete="off"
-              spellCheck="false"
-              maxLength={8}
-              value={code}
-              onChange={(event) => { setCode(event.target.value); setError('') }}
-              aria-label="输入暗号"
-              aria-invalid={Boolean(error)}
-              aria-describedby={error ? 'code-error' : undefined}
-            />
-            <button type="submit" aria-label="确认暗号">↗</button>
-          </div>
-          <p className="code-entry__error" id="code-error" role="alert">{error}</p>
-        </form>
-      </section>
-    </main>
+          <form className={error ? 'code-entry has-error' : 'code-entry'} onSubmit={enterPrivatePage}>
+            <label htmlFor="private-code">输入暗号：</label>
+            <div className="code-entry__field">
+              <input
+                id="private-code"
+                name="code"
+                type="password"
+                inputMode="numeric"
+                autoComplete="off"
+                spellCheck="false"
+                maxLength={8}
+                value={code}
+                onChange={(event) => { setCode(event.target.value); setError('') }}
+                aria-label="输入暗号"
+                aria-invalid={Boolean(error)}
+                aria-describedby={error ? 'code-error' : undefined}
+              />
+              <button type="submit" aria-label="确认暗号">↗</button>
+            </div>
+            <p className="code-entry__error" id="code-error" role="alert">{error}</p>
+          </form>
+        </section>
+      </main>
+    </>
   )
 }
 
