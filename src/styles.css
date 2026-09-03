@@ -341,6 +341,12 @@ button:focus-visible, input:focus-visible {
   filter: blur(14px) saturate(.9);
   transform: scale(1.045);
   transform-origin: center;
+  transition: filter 900ms ease, transform 900ms ease;
+}
+
+.letter-page__shader.is-clear {
+  filter: blur(0) saturate(1);
+  transform: scale(1);
 }
 
 .letter-player__shade {

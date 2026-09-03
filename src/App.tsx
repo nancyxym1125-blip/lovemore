@@ -211,7 +211,9 @@ function App() {
           onClick={advanceLetter}
           onKeyDown={handleLetterKey}
         >
-        <ShaderBackground className="letter-page__shader" />
+        <ShaderBackground
+          className={`letter-page__shader ${letterLine === letterLines.length ? 'is-clear' : ''}`}
+        />
         <div className="letter-player__shade" aria-hidden="true" />
         {previewDay !== null && (
           <p className="letter-player__preview">PREVIEW · DAY {previewDay}</p>
