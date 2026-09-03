@@ -1,0 +1,20 @@
+{
+  "version": 1,
+  "profile": {
+    "personA": "小满",
+    "personB": "青禾",
+    "startDate": "2024-05-20",
+    "anniversaryDate": "2027-05-20"
+  },
+  "memories": [
+    {
+      "id": "fixture-memory-1",
+      "date": "2026-08-18",
+      "title": "从备份恢复的晚风",
+      "content": "这是一条仅用于浏览器验收的虚构回忆。",
+      "mood": "温暖",
+      "createdAt": "2026-08-18T12:00:00.000Z"
+    }
+  ],
+  "quiz": null
+}
