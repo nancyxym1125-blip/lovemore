@@ -1,6 +1,10 @@
 node_modules/
 dist/
 .npm-cache/
+.pnpm-store/
+.DS_Store
+output/
+tmp/
 *.local
 *.tsbuildinfo
 vite.config.js
