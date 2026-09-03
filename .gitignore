@@ -5,6 +5,7 @@ dist/
 .DS_Store
 output/
 tmp/
+brand/
 *.local
 *.tsbuildinfo
 vite.config.js
