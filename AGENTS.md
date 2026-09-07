@@ -25,6 +25,7 @@ LOVE MORE 是写给 Yu Chen 的纯前端私人互动信件：暗号入口、欢�
 - `src/styles.css` 维护全部视觉与响应式样式。
 - `src/assets/L-O-V-E.mp3` 是运行时音乐；不要提交原始 FLAC。
 - `src/assets/illustrations/` 保存与八段文字一一对应的透明暖白线稿。
+- `src/assets/fonts/` 保存移动端手写体回退字体子集及许可证；苹果设备优先使用系统 `HanziPen SC`。
 - 页面只使用 `brand/vi-v2/assets/logos/` 中已跟踪的两张 Logo。
 - `dist/`、缓存、`tmp/` 和 `output/` 不进入 Git。
 

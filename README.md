@@ -39,6 +39,7 @@ npm run build
 - `src/styles.css`：布局、排版与动画。
 - `src/assets/L-O-V-E.mp3`：网页背景音乐。
 - `src/assets/illustrations/`：八张小狗与小猫主题透明线稿。
+- `src/assets/fonts/`：移动端手写体回退字体子集及其 OFL 许可证。
 - `brand/vi-v2/assets/logos/`：页面实际使用的两张 Logo。
 
 ## 发布与隐私
