@@ -5,6 +5,9 @@ import { ShaderBackground } from './ShaderBackground'
 const loveMoreLogo = new URL('../brand/vi-v2/assets/logos/love-more-horizontal-burgundy.png', import.meta.url).href
 const loveMoreStackedLogo = new URL('../brand/vi-v2/assets/logos/love-more-primary-stacked-white.png', import.meta.url).href
 const backgroundMusic = new URL('./assets/L-O-V-E.mp3', import.meta.url).href
+const LETTER_ILLUSTRATIONS = Array.from({ length: 8 }, (_, index) => (
+  new URL(`./assets/illustrations/letter-${String(index + 1).padStart(2, '0')}.png`, import.meta.url).href
+))
 const PRIVATE_CODE = '19940312'
 const RELATIONSHIP_START = '2026-05-31'
 const LETTER_LINES = [
@@ -84,7 +87,7 @@ function App() {
     const animateVolume = (now: number) => {
       const progress = Math.min(1, (now - startedAt) / duration)
       const easedProgress = 1 - Math.pow(1 - progress, 3)
-      audio.volume = initialVolume + (targetVolume - initialVolume) * easedProgress
+      audio.volume = Math.min(1, Math.max(0, initialVolume + (targetVolume - initialVolume) * easedProgress))
       if (progress < 1) {
         musicFadeFrame.current = window.requestAnimationFrame(animateVolume)
       } else {
@@ -220,9 +223,19 @@ function App() {
         )}
         <h1 className="sr-only">写给 YU CHEN 的话</h1>
         {letterLine >= 0 && letterLine < letterLines.length && (
-          <BlurText key={letterLine} exiting={letterExiting}>
-            {letterLines[letterLine]}
-          </BlurText>
+          <>
+            <img
+              className={`letter-player__illustration letter-player__illustration--${letterLine + 1} ${letterExiting ? 'is-exiting' : 'is-entering'}`}
+              src={LETTER_ILLUSTRATIONS[letterLine]}
+              alt=""
+              aria-hidden="true"
+              draggable="false"
+              key={`illustration-${letterLine}`}
+            />
+            <BlurText key={letterLine} exiting={letterExiting}>
+              {letterLines[letterLine]}
+            </BlurText>
+          </>
         )}
         {letterLine === LETTER_LINES.length - 1 && !letterExiting && (
           <button

@@ -370,6 +370,30 @@ button:focus-visible, input:focus-visible {
   pointer-events: none;
 }
 
+.letter-player__illustration {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  z-index: -1;
+  display: block;
+  width: min(820px, 76vw);
+  height: 92svh;
+  object-fit: contain;
+  opacity: .56;
+  pointer-events: none;
+  user-select: none;
+  transform: translate(-50%, -50%);
+  will-change: opacity;
+}
+
+.letter-player__illustration.is-entering {
+  animation: illustration-in 1.15s .08s ease both;
+}
+
+.letter-player__illustration.is-exiting {
+  animation: illustration-out .72s ease both;
+}
+
 .letter-player__line {
   position: absolute;
   top: 50%;
@@ -583,6 +607,16 @@ button:focus-visible, input:focus-visible {
   to { opacity: 0; filter: blur(12px); transform: translateY(-4px) scale(.98); }
 }
 
+@keyframes illustration-in {
+  from { opacity: 0; }
+  to { opacity: .56; }
+}
+
+@keyframes illustration-out {
+  from { opacity: .56; }
+  to { opacity: 0; }
+}
+
 @keyframes final-logo-in {
   from { opacity: 0; }
 }
@@ -624,6 +658,25 @@ button:focus-visible, input:focus-visible {
     font-size: clamp(28px, 8vw, 43px);
   }
 
+  .letter-player__preview {
+    right: auto;
+    left: 20px;
+  }
+
+  .letter-player__illustration {
+    width: 118vw;
+    height: 88svh;
+    opacity: .5;
+  }
+
+  .letter-player__illustration.is-entering {
+    animation-name: illustration-in-mobile;
+  }
+
+  .letter-player__illustration.is-exiting {
+    animation-name: illustration-out-mobile;
+  }
+
   .letter-player__logo {
     width: min(330px, 62vw);
   }
@@ -635,6 +688,16 @@ button:focus-visible, input:focus-visible {
   .easter-egg__content {
     padding: 50px 22px 42px;
   }
+}
+
+@keyframes illustration-in-mobile {
+  from { opacity: 0; }
+  to { opacity: .5; }
+}
+
+@keyframes illustration-out-mobile {
+  from { opacity: .5; }
+  to { opacity: 0; }
 }
 
 @media (prefers-reduced-motion: reduce) {

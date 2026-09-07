@@ -24,6 +24,7 @@ LOVE MORE 是写给 Yu Chen 的纯前端私人互动信件：暗号入口、欢�
 - `src/ShaderBackground.tsx` 维护背景与鼠标扰动；修改后检查 WebGL 生命周期。
 - `src/styles.css` 维护全部视觉与响应式样式。
 - `src/assets/L-O-V-E.mp3` 是运行时音乐；不要提交原始 FLAC。
+- `src/assets/illustrations/` 保存与八段文字一一对应的透明暖白线稿。
 - 页面只使用 `brand/vi-v2/assets/logos/` 中已跟踪的两张 Logo。
 - `dist/`、缓存、`tmp/` 和 `output/` 不进入 Git。
 
